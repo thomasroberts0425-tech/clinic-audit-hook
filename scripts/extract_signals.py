@@ -30,6 +30,9 @@ STAFF_PAT = re.compile(r"/(team|our-team|staff|practitioners?|therapists?|about-
 # "phone-only" at a clinic with a /book-an-appointment/ page is a lead-burning error.
 INTERNAL_BOOKING_PAT = re.compile(r"/(book|book-?an-?appointment|booking|appointments?|schedule)(/|$|\?)", re.I)
 CA_POSTAL = re.compile(r"\b[A-Z]\d[A-Z]\s?\d[A-Z]\d\b")
+MD_LINK = re.compile(r"\[([^\]]{0,45})\]\(([^)]+)\)")
+BOOK_LABEL = re.compile(r"book|appoint|schedul|request", re.I)
+CONTACT_PATH = re.compile(r"/contact", re.I)
 PHONE = re.compile(r"(\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}")
 
 
@@ -48,6 +51,34 @@ def detect_platform(links, html):
         if m:
             return p, m.group(0)[:200]
     return None, None
+
+
+def classify_booking(platform, internal_booking, md, tel):
+    """How can a patient actually book?
+
+    Distinguishing these matters more than any other signal. Three separate
+    passes at this were wrong: a clinic with its own /book page is not
+    "phone-only", and a clinic whose Book button opens a contact form has
+    neither real booking nor phone-only booking -- it has a callback request.
+    Saying the wrong one in an email is a lead-burning error.
+    """
+    if platform:
+        return "platform"
+
+    for label, href in MD_LINK.findall(md):
+        if not BOOK_LABEL.search(label):
+            continue
+        # "facebook" contains "book" -- match the label, then judge the target.
+        if CONTACT_PATH.search(urlparse(href).path):
+            return "contact_form"
+        if INTERNAL_BOOKING_PAT.search(urlparse(href).path):
+            return "booking_page"
+
+    if internal_booking:
+        return "booking_page"
+    if tel:
+        return "phone_only"
+    return None
 
 
 def main(raw_path, source_url):
@@ -107,11 +138,15 @@ def main(raw_path, source_url):
         "is_janeapp": platform == "janeapp",
         "has_tel_link": bool(tel),
         "internal_booking_page": internal_booking[0] if internal_booking else None,
+        # platform | booking_page | contact_form | phone_only | None(unknown)
+        "booking_route": classify_booking(platform, internal_booking, md, tel) if status == 200 else None,
         # Phone-only requires: successful fetch, no platform, AND no booking page of
         # their own. Without that last clause this fires on clinics that do take
         # online bookings, just not through a third party.
-        "phone_only_booking": (status == 200 and platform is None
-                               and not internal_booking and bool(tel)) or None,
+        "phone_only_booking": (status == 200 and platform is None and not internal_booking
+                               and bool(tel)
+                               and classify_booking(platform, internal_booking, md, tel)
+                               == "phone_only") or None,
         # Booking exists but nothing on the homepage says so.
         "booking_cta_invisible": (status == 200 and bool(internal_booking)
                                   and not re.search(r"book|appointment|schedul", md, re.I)) or None,

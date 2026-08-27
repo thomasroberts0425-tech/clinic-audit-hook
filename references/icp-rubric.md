@@ -22,7 +22,7 @@ Never lead a hook with a low-confidence or judgment signal.
 |---|---|---|---|
 | Jane App installed | `is_janeapp` | **High** | The ICP qualifier. Jane App means they already pay for booking software -- digitally ready, budget-aware, past the "do we need this" conversation. Best possible lead. |
 | Other booking platform | `booking_platform` | **High** | Juvonno, Cliniko, Mindbody, Fresha, Owl, ClinicSense. Same signal as Jane App: they buy software. |
-| Phone-only booking | `phone_only_booking` | Medium | No platform URL but a `tel:` link. Strong pain, but could be a widget that failed to render -- verify before asserting. |
+| Booking route | `booking_route` | **High** | How a patient actually books: `platform` (Jane App etc.), `booking_page` (their own), `contact_form` (Book button opens a contact form -- a callback request, not booking), `phone_only` (no booking affordance at all). Three earlier attempts at this signal were wrong in ways that would have burned leads. Never say "phone-only" unless the route says so. |
 | Flat service structure | `flat_site` | **High** | One services page (or anchors on the homepage) instead of per-service URLs. Directly costs local search. The single most reliable SEO hook. |
 | Missing staff bios | `staff_page_count` | Medium | Bios add unique content and E-E-A-T, and rank for "[treatment] [city] [therapist]". |
 | NAP incomplete | `nap_phone_on_page`, `nap_postal_on_page` | **High** | Name/address/phone must be on the landing page and consistent everywhere. Missing = direct local-ranking damage. |
@@ -43,7 +43,9 @@ Rank candidate hooks in this order and take the first that fires:
 1. **Jane App + flat services** -- they invested in booking but search can't find the
    services. The strongest opener in the set: praises a real decision, names a real gap.
 2. **Jane App + missing NAP** -- same shape, local-ranking flavour.
-3. **Phone-only booking** (verified) -- highest pain, but check it is not a render miss.
+3. **`contact_form` or `phone_only` route** -- a patient cannot actually book. High pain,
+   and now high confidence. Say what is literally true: a Book button that opens a
+   contact form is a callback request, not booking.
 4. **Flat services** alone.
 5. **Missing staff bios** alone.
 6. **Nothing fired** -- recommend skipping. See voice.md.

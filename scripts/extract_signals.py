@@ -26,6 +26,9 @@ CMS_MARKERS = {
 }
 SERVICE_PAT = re.compile(r"/(services?|treatments?|what-we-(do|treat)|conditions?)(/|$|\?)", re.I)
 STAFF_PAT = re.compile(r"/(team|our-team|staff|practitioners?|therapists?|about-us|about|meet)(/|$|\?)", re.I)
+# A clinic's own booking page. Not a platform, but it IS online booking -- claiming
+# "phone-only" at a clinic with a /book-an-appointment/ page is a lead-burning error.
+INTERNAL_BOOKING_PAT = re.compile(r"/(book|book-?an-?appointment|booking|appointments?|schedule)(/|$|\?)", re.I)
 CA_POSTAL = re.compile(r"\b[A-Z]\d[A-Z]\s?\d[A-Z]\d\b")
 PHONE = re.compile(r"(\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}")
 
@@ -75,6 +78,7 @@ def main(raw_path, source_url):
 
     services = distinct_paths(SERVICE_PAT)
     staff = distinct_paths(STAFF_PAT)
+    internal_booking = distinct_paths(INTERNAL_BOOKING_PAT)
     tel = [l for l in links if l.lower().startswith("tel:")]
 
     cms = None
@@ -102,8 +106,15 @@ def main(raw_path, source_url):
         "booking_evidence": evidence,
         "is_janeapp": platform == "janeapp",
         "has_tel_link": bool(tel),
-        # phone-only is only assertable when the fetch actually succeeded
-        "phone_only_booking": (status == 200 and platform is None and bool(tel)) or None,
+        "internal_booking_page": internal_booking[0] if internal_booking else None,
+        # Phone-only requires: successful fetch, no platform, AND no booking page of
+        # their own. Without that last clause this fires on clinics that do take
+        # online bookings, just not through a third party.
+        "phone_only_booking": (status == 200 and platform is None
+                               and not internal_booking and bool(tel)) or None,
+        # Booking exists but nothing on the homepage says so.
+        "booking_cta_invisible": (status == 200 and bool(internal_booking)
+                                  and not re.search(r"book|appointment|schedul", md, re.I)) or None,
         "service_subpage_count": len(services),
         "service_subpages": services[:8],
         # "flat" == services exist but live on one page (or no service page at all)

@@ -2,8 +2,8 @@
 name: clinic-audit-hook
 description: Audit a clinic or local healthcare website against ICP signals and draft a personalized outreach opener. Use when given a physiotherapy, chiropractic, RMT/massage, dental, rehab, or wellness clinic URL and asked to audit it, check outreach fit, find the hook, assess it as a lead, identify its booking system, or write a first-touch opener. Triggers on "audit this clinic", "is this a good lead", "what's wrong with this clinic's site", "do they use Jane App", "write me an opener for this clinic", or a bare clinic URL pasted with intent to reach out.
 allowed-tools:
-  - Bash(./scripts/collect.sh *)
-  - Bash(python3 scripts/extract_signals.py *)
+  - Bash(*/clinic-audit-hook/scripts/collect.sh *)
+  - Bash(python3 */clinic-audit-hook/scripts/extract_signals.py *)
   - Bash(firecrawl *)
 ---
 
@@ -26,8 +26,11 @@ the lead. If you do not know the review status, say so in the output.
 ### 1. Collect
 
 ```bash
-./scripts/collect.sh "<clinic-url>"
+~/.claude/skills/clinic-audit-hook/scripts/collect.sh "<clinic-url>"
 ```
+
+Writes to `./.audit/` in the current directory. If the skill is installed elsewhere,
+use the path it actually lives at — the scripts are self-contained and run from any cwd.
 
 One Firecrawl call, then a pure-stdlib extractor. Deterministic -- no model in this path,
 so the same URL yields the same signals every run.

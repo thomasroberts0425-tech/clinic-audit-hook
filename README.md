@@ -76,18 +76,23 @@ a plain fetch got real HTML it found `janeapp` fine. The failure mode is 403s. A
 real clinic sites, **7 returned non-200 to a default `python-requests` user-agent**, plus
 one connection error: roughly 1 in 5.
 
-**2. That silently corrupts lead scoring.** `requests.get()` does not raise on 403 — it
-returns the block page. An analyzer with only a try/except and no status check parses
-"403 - Forbidden" and records every signal as absent: no booking system, no contact form,
-no CMS. Because gap-based scoring awards points for absent signals, a blocked clinic
-scores as a *maximally weak website* and is promoted up the outreach tiers. It gets
-contacted precisely because the fetch failed.
+**2. That silently corrupts outreach copy.** `requests.get()` does not raise on 403 — it
+returns the block page. An analyzer with no status check parses "403 - Forbidden" and
+records every signal as absent: no booking system, no contact form, no CMS. Those signals
+drive gap-ranked email personalization, and *missing booking* is the top-priority gap — so
+a blocked fetch becomes a false claim in a customer-facing email.
 
-Verified directly: on a 403 body, `book`/`appointment`/`schedule` are all absent, `<form>`
-absent, `wp-content` absent — an all-gaps record indistinguishable from a genuinely bad site.
+Demonstrated on two real leads. `healingtouchrehab.com` and `striowskiphysio.com` both
+have online booking; both were recorded as lacking it, and both would have been emailed
+that claim.
 
-Fix in the pipeline is small: check `status_code` before parsing, and treat a non-200 as
-unknown rather than absent.
+Fixed upstream in `lead-generation-system` — status check plus a measured retry (default
+UA 3/9 sites, browser UA 4/9, default-then-retry 7/9; a blanket browser UA is a net wash
+because a Chrome UA on a non-browser TLS stack is itself a bot signal).
+
+**Scope note:** this affected outreach copy, not lead tiers. `website_quality_score` is
+computed but never feeds `lead_score` — tiering is set from Google Maps metadata before
+the site is fetched.
 
 ## Requirements
 

@@ -1,0 +1,76 @@
+---
+name: clinic-audit-hook
+description: Audit a clinic or local healthcare website against ICP signals and draft a personalized outreach opener. Use when given a physiotherapy, chiropractic, RMT/massage, dental, rehab, or wellness clinic URL and asked to audit it, check outreach fit, find the hook, assess it as a lead, identify its booking system, or write a first-touch opener. Triggers on "audit this clinic", "is this a good lead", "what's wrong with this clinic's site", "do they use Jane App", "write me an opener for this clinic", or a bare clinic URL pasted with intent to reach out.
+allowed-tools:
+  - Bash(./scripts/collect.sh *)
+  - Bash(python3 scripts/extract_signals.py *)
+  - Bash(firecrawl *)
+---
+
+# Clinic Audit → Outreach Hook
+
+Turn one clinic URL into an evidence-backed signal table and a single-paragraph
+outreach opener.
+
+This is the judgment layer for leads that warrant a personal approach. Bulk enrichment
+and tiering happen upstream; this runs on the ones worth a human call.
+
+## Before you start
+
+The input URL is assumed **already review-qualified** (4.5+ stars, 100+ reviews) by the
+upstream pipeline or a manual check. This skill audits the website. It does not qualify
+the lead. If you do not know the review status, say so in the output.
+
+## Workflow
+
+### 1. Collect
+
+```bash
+./scripts/collect.sh "<clinic-url>"
+```
+
+One Firecrawl call, then a pure-stdlib extractor. Deterministic -- no model in this path,
+so the same URL yields the same signals every run.
+
+**Check `fetch_ok` first.** If `status_code` is not 200, stop. A blocked or errored fetch
+produces a page with no booking links, no forms, and no content -- which looks exactly
+like a maximally weak website. Reporting that as an audit finding is the single worst
+failure mode available here. Say the fetch failed and stop.
+
+### 2. Read the signals against the rubric
+
+Read `references/icp-rubric.md`. For each signal, note whether it fired and at what
+confidence. **Do not restate signals as findings without checking confidence** -- the
+rubric marks which ones can be stated as fact.
+
+### 3. Pick exactly one hook
+
+Use the hook priority list in the rubric. Take the first that fires. Resist the urge to
+mention the others; one specific finding outperforms three.
+
+If nothing above Medium confidence fires, the answer is "skip this lead" -- see the
+closing section of `references/voice.md`.
+
+### 4. Write
+
+Read `references/voice.md` and follow it. Output in this order:
+
+**Signal table** -- every signal, whether it fired, the evidence, and the confidence.
+This is the audit, and it is what makes the opener checkable.
+
+**The hook** -- which signal you chose and why it beat the others. One or two sentences.
+
+**The opener** -- one paragraph, under 150 words, ready to drop into the
+`[PERSONALIZED OBSERVATION]` slot of the cold email template.
+
+## Rules
+
+- **Never assert a signal the collector did not return.** If `booking_platform` is null,
+  they have no detectable booking platform -- not "they use phone booking". The
+  difference matters.
+- **Never invent a number.** No load times, no traffic estimates, no revenue figures.
+  `html_bytes` is a page-weight proxy, not a load time; do not convert one to the other.
+- **A null is not a negative.** `sticky_cta_hint: null` means unknown, not absent.
+- **Say when you are guessing.** "Dated frontend" is your read of the page. Label it.
+- Decline rather than manufacture. A skipped lead costs nothing; a bad first touch
+  burns the only first impression that clinic will give.

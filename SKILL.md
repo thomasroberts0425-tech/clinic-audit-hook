@@ -56,15 +56,23 @@ closing section of `references/voice.md`.
 
 ### 4. Write
 
-Read `references/voice.md` and follow it. Output in this order:
+Read `references/voice.md` and follow it. The register is **customer-curious, not
+consultant-declarative** -- you went looking for something on their site and could not
+find it, and you are asking about it. You are not presenting an audit.
+
+Output in this order:
 
 **Signal table** -- every signal, whether it fired, the evidence, and the confidence.
-This is the audit, and it is what makes the opener checkable.
+This is the audit, and it is what makes the message checkable.
 
 **The hook** -- which signal you chose and why it beat the others. One or two sentences.
 
-**The opener** -- one paragraph, under 150 words, ready to drop into the
-`[PERSONALIZED OBSERVATION]` slot of the cold email template.
+**The observation** -- one or two sentences that fill the `[PERSONALIZED OBSERVATION]`
+slot in the existing cold email template. This is the load-bearing output.
+
+**The full email** -- first person, from Thomas, built around that observation. Under 150
+words, one CTA. Leave `[credibility line]` as a placeholder rather than inventing a track
+record.
 
 ## Rules
 
@@ -75,5 +83,10 @@ This is the audit, and it is what makes the opener checkable.
   `html_bytes` is a page-weight proxy, not a load time; do not convert one to the other.
 - **A null is not a negative.** `sticky_cta_hint: null` means unknown, not absent.
 - **Say when you are guessing.** "Dated frontend" is your read of the page. Label it.
+- **Never invent a track record.** No claimed clients, results, or experience. Leave
+  `[credibility line]` for Thomas to fill. A fabricated reference collapses the moment
+  they ask a follow-up question.
+- **Vary the opening line.** If several clinics in a row get the same sentence skeleton,
+  the skeleton is the tell and the personalisation is worthless. Rotate the entry point.
 - Decline rather than manufacture. A skipped lead costs nothing; a bad first touch
   burns the only first impression that clinic will give.

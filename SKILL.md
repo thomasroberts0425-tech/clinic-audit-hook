@@ -70,9 +70,15 @@ This is the audit, and it is what makes the message checkable.
 **The observation** -- one or two sentences that fill the `[PERSONALIZED OBSERVATION]`
 slot in the existing cold email template. This is the load-bearing output.
 
-**The full email** -- first person, from Thomas, built around that observation. Under 150
-words, one CTA. Leave `[credibility line]` as a placeholder rather than inventing a track
-record.
+**The full email** -- first person, from Thomas, built around that observation.
+**50-80 words. A short question as the subject line, under 60 characters. One CTA, and
+it asks for interest, never for time** ("Is that something you've already looked at?" --
+not "worth a quick call?"). Leave `[credibility line]` as a placeholder rather than
+inventing a track record.
+
+These constraints come from the data in `references/voice.md`, not from taste. The
+interest-CTA rule is the highest-leverage one: Gong found it the best-performing CTA for
+cold email across 304,174 messages, and asking for time upfront costs replies.
 
 ## Rules
 
@@ -88,5 +94,8 @@ record.
   they ask a follow-up question.
 - **Vary the opening line.** If several clinics in a row get the same sentence skeleton,
   the skeleton is the tell and the personalisation is worthless. Rotate the entry point.
+- **Never close by asking for time.** No "quick call", no "20 minutes", no calendar link
+  on a first touch. Ask whether the thing you found is on their radar. The meeting is
+  asked for on the reply.
 - Decline rather than manufacture. A skipped lead costs nothing; a bad first touch
   burns the only first impression that clinic will give.

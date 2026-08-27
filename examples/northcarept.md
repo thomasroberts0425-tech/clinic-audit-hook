@@ -34,15 +34,33 @@ for any individual service.
 
 Chosen over the staff-bio gap because it is High confidence and has a clearer cost.
 
-## Opener
+## Observation
 
-> Hi — you're on Jane App, so booking is already handled. The gap is one step earlier:
-> all six of your treatments sit on a single `/services` page as anchor links, so when
-> someone searches "shockwave therapy North York" there's no page of yours for Google to
-> return. Clinics with a real page per service pick that traffic up by default. Worth 20
-> minutes to walk through what that's costing you?
+Fills the `[PERSONALIZED OBSERVATION]` slot in the cold email template:
 
-126 words. One finding, one cost, one ask. No invented numbers.
+> Someone asked me who does shockwave in North York — you do, but I only found that out
+> by scrolling your services page.
+
+## Email
+
+54 words. Question subject, 15 characters. Ask is for interest, not time.
+
+> **Subject:** shockwave page?
+>
+> Hi — someone asked me last week who does shockwave in North York. You do it, but I only
+> found that out by scrolling your services page. There's no page for it on its own.
+>
+> Probably why you don't turn up for "shockwave therapy North York."
+>
+> Already on your radar, or worth a look?
+>
+> — Thomas
+
+Built to the constraints in `references/voice.md`: interest CTA rather than a time
+request (Gong, 304K emails), 50-80 words (Hunter, 34M cold emails), question subject
+under 60 characters (Belkins, 5.5M emails), problem stated before explanation.
+
+No credibility line — at 54 words there was no room for one that was both true and short.
 
 ## Note
 
